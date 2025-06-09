@@ -39,6 +39,7 @@ class TextCorrector
             string content = File.ReadAllText(filePath, Encoding.UTF8);
 
             content = CorrectTypos(content, typoDictionary);
+            content = CorrectPhoneNumbers(content);
 
             File.WriteAllText(filePath, content, Encoding.UTF8);
         }
@@ -98,4 +99,22 @@ class TextCorrector
 
         }, RegexOptions.IgnoreCase); // Игнорируем регистр при поиске
     }
+
+
+    static string CorrectPhoneNumbers(string text)
+    {
+        // Только номера с кодом (012)
+        string pattern = @"\(012\)\s*(\d{3})-(\d{2})-(\d{2})";
+
+        // Заменяем найденные опечатки на правильные цифры
+        return Regex.Replace(text, pattern, match =>
+        {
+            string part1 = match.Groups[1].Value;
+            string part2 = match.Groups[2].Value;
+            string part3 = match.Groups[3].Value;
+
+            return $"+380 12 {part1} {part2} {part3}";
+        });
+    }
+
 }
